@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Happy Birthday, My Love</title>
+
+    <!--
+  ============================================================
+  PREMIUM BIRTHDAY EXPERIENCE
+  Signature motif: THE LOCKET HEART.
+  A heart-shaped locket opens in Section 1 (the gift),
+  and reforms as the glowing eternal heart in Section 3 (the promise).
+  Same silhouette, same ribbon color, bookending the journey.
+  ============================================================
+-->
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ============ LOADING SCREEN ============ -->
+    <div id="loading-screen">
+      <div class="loader-heart">
+        <svg viewBox="0 0 100 90" class="loader-heart-svg">
+          <path
+            d="M50 85 C 10 55, 0 25, 25 10 C 40 2, 50 15, 50 25 C 50 15, 60 2, 75 10 C 100 25, 90 55, 50 85 Z"
+          />
+        </svg>
+      </div>
+      <p class="loader-text">
+        wrapping your gift<span class="loader-dots"
+          ><span>.</span><span>.</span><span>.</span></span
+        >
+      </p>
+    </div>
+
+    <!-- ============ SCROLL PROGRESS INDICATOR ============ -->
+    <div id="scroll-progress"><div id="scroll-progress-fill"></div></div>
+
+    <!-- ============ AMBIENT CANVAS LAYERS (hearts, sparkles, petals, stars) ============ -->
+    <canvas id="bg-canvas"></canvas>
+    <canvas id="cursor-canvas"></canvas>
+    <div id="mouse-glow"></div>
+
+    <!-- ============ FLOATING MUSIC PLAYER ============ -->
+    <!--
+    CARA MENAMBAHKAN LAGU SENDIRI:
+    1. Taruh file musikmu (mp3/ogg/wav) di folder assets/music/
+    2. Buka script.js, di paling atas ada:
+         const SONG_SRC   = "assets/music/your-song.mp3";
+         const SONG_TITLE = "Our Little Lullaby";
+       Ganti SONG_SRC dengan nama file kamu, dan SONG_TITLE dengan judul lagunya.
+    3. Simpan, refresh browser. Selesai — tidak perlu ubah kode lain.
+    Kalau file belum ada, tombol play tetap muncul tapi lagu tidak akan bersuara,
+    jadi website tidak akan error.
+  -->
+    <audio id="bg-audio" loop preload="auto"></audio>
+    <div id="music-player" class="glass">
+      <button id="music-toggle" aria-label="Play music">
+        <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+        <svg id="icon-pause" viewBox="0 0 24 24" style="display: none">
+          <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+        </svg>
+      </button>
+      <div class="music-info">
+        <div class="music-title" id="music-title">Our Little Lullaby</div>
+        <div class="equalizer" id="equalizer">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="volume-wrap">
+        <button id="mute-toggle" aria-label="Mute">
+          <svg id="icon-vol-on" viewBox="0 0 24 24">
+            <path
+              d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12z"
+            />
+          </svg>
+          <svg id="icon-vol-off" viewBox="0 0 24 24" style="display: none">
+            <path
+              d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.42.05-.63zM19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.94 8.94 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 0 0 3.69-1.81L18.73 21 20 19.73l-9-9L4.27 3z"
+            />
+          </svg>
+        </button>
+        <input type="range" id="volume-slider" min="0" max="100" value="55" />
+      </div>
+    </div>
+
+    <!-- ============================================================
+       SECTION 1 — OPENING
+  ============================================================= -->
+    <section id="section-1" class="section">
+      <div class="section-inner">
+        <p class="eyebrow reveal-up">a little something for</p>
+        <h1 class="hero-title reveal-up">
+          Happy Birthday <span class="heart-accent">❤</span>
+        </h1>
+        <p class="hero-subtitle reveal-up">My Special Person</p>
+
+        <div id="gift-stage">
+          <div id="locket" class="locket">
+            <div class="ribbon-vert"></div>
+            <div class="ribbon-horiz"></div>
+            <div class="bow">
+              <div class="bow-loop bow-loop-left"></div>
+              <div class="bow-loop bow-loop-right"></div>
+              <div class="bow-knot"></div>
+            </div>
+            <div class="locket-half locket-left"></div>
+            <div class="locket-half locket-right"></div>
+            <div class="locket-glow"></div>
+          </div>
+          <p id="gift-hint" class="gift-hint">tap the heart to open it</p>
+        </div>
+
+        <button id="open-surprise-btn" class="btn-premium hidden">
+          <span>Open My Surprise</span>
+        </button>
+      </div>
+      <div class="scroll-cue">
+        <span>scroll</span>
+        <div class="scroll-cue-line"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+       SECTION 2 — MAIN CONTENT
+  ============================================================= -->
+    <section id="section-2" class="section">
+      <div class="section-inner wide">
+        <div class="glass-card main-card">
+          <!-- ============================================================
+             MAIN PHOTO
+             Taruh foto utama kamu di assets/images/photo-main.jpg
+             (nama file harus SAMA PERSIS). Kalau file belum ada,
+             kotak ini otomatis menampilkan petunjuk saja, tidak error.
+             Kamu TIDAK perlu edit HTML ini sama sekali.
+        ============================================================= -->
+          <div class="photo-frame reveal-up">
+            <img
+              class="frame-img"
+              src="assets/images/Foto3.jpeg"
+              alt="Foto kami"
+              onerror="
+                this.onerror = null;
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+            <div class="photo-placeholder">
+              <svg viewBox="0 0 24 24" class="photo-icon">
+                <path
+                  d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+                />
+              </svg>
+              <span>taruh photo-main.jpg di assets/images/</span>
+            </div>
+            <div class="frame-sparkle s1"></div>
+            <div class="frame-sparkle s2"></div>
+            <div class="frame-sparkle s3"></div>
+          </div>
+
+          <h2 class="section-title reveal-up">
+            My Favorite Person <span class="heart-accent">❤</span>
+          </h2>
+
+          <!-- Romantic paragraph placeholder -->
+          <p class="romantic-text reveal-up">
+            <!-- Replace this paragraph later with your own words -->
+            Happy Birthday, sayanggg! 🥳🎂💗 Anjayy, udah nambah umur aja nihh
+            wkwkwk. Sekarang udah jadi kakak-kakak yaa, semoga makin dewasa,
+            makin cantik, makin kuat, dan tentunya makin bahagia terus. 🤍
+            <br />
+            <br />
+            Maaf yaa sayang, di ulang tahun kamu kali ini aku belum bisa ngasih
+            hadiah yang spesial atau sesuatu yang mewah. Untuk sekarang aku cuma
+            bisa kasih doa dan ucapan sederhana ini. Tapi percayalah, semua doa
+            yang aku ucapin buat kamu bener-bener dari hati.
+            <br />
+            <br />
+            Semoga di umur yang baru ini semua cita-cita dan impian kamu
+            pelan-pelan bisa tercapai. Semoga semua doa yang selama ini kamu
+            panjatkan dikabulkan satu per satu. Semoga kesehatan, rezeki,
+            kebahagiaan, dan hal-hal baik selalu ngikutin kamu ke mana pun kamu
+            pergi. Kalau lagi capek, semoga selalu dikasih kekuatan. Kalau lagi
+            sedih, semoga selalu ada alasan buat senyum lagi.
+            <br />
+            <br />
+            Aku juga mau minta maaf yaa kalau selama ini aku masih sering bikin
+            kamu kesel, bikin bad mood, atau kadang ngelakuin hal yang bikin
+            kamu kepikiran. Aku sadar aku belum sempurna, tapi aku bakal terus
+            berusaha jadi orang yang lebih baik buat kamu sedikit demi sedikit.
+            <br />
+            <br />
+            Makasih yaa udah hadir di hidup aku. Makasih udah mau bertahan, udah
+            mau dengerin cerita-cerita aku, udah nemenin aku sampai sejauh ini.
+            Semoga kita masih bisa ngelewatin banyak momen bareng, bikin
+            kenangan baru, ketawa bareng, dan saling dukung apa pun yang terjadi
+            nanti.
+            <br />
+            <br />
+            Sekali lagi, Happy Birthday yaa, sayanggg. 🥳🎈 Semoga hari ini jadi
+            hari yang penuh kebahagiaan buat kamu, dan semoga senyum itu nggak
+            pernah hilang dari wajah kamu.
+            <br />
+            <br />
+            You're the best girl I've ever met. ❤️ I love you, always. Happy
+            Birthday, sayang. 🎂🎉
+
+            <!-- ============================================================
+             SPACE FOR 4 PHOTOS
+             Taruh 4 foto di assets/images/ dengan nama PERSIS:
+             foto-1.jpg, foto-2.jpg, foto-3.jpg, foto-4.jpg
+             Kamu TIDAK perlu edit HTML ini — cukup taruh filenya saja.
+             Kalau file belum ada, kotaknya otomatis menampilkan
+             petunjuk saja, tidak error.
+        ============================================================= -->
+          </p>
+
+          <div class="photo-gallery reveal-up">
+            <div class="gallery-item">
+              <img
+                class="gallery-img"
+                src="assets/images/Foto1.jpeg"
+                alt="Kenangan 1"
+                onerror="
+                  this.onerror = null;
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
+              />
+              <div class="gallery-placeholder">
+                <svg viewBox="0 0 24 24" class="photo-icon">
+                  <path
+                    d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+                  />
+                </svg>
+                <span>foto-1.jpg</span>
+              </div>
+            </div>
+            <div class="gallery-item">
+              <img
+                class="gallery-img"
+                src="assets/images/Foto4.jpeg"
+                alt="Kenangan 2"
+                onerror="
+                  this.onerror = null;
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
+              />
+              <div class="gallery-placeholder">
+                <svg viewBox="0 0 24 24" class="photo-icon">
+                  <path
+                    d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+                  />
+                </svg>
+                <span>foto-2.jpg</span>
+              </div>
+            </div>
+            <div class="gallery-item">
+              <img
+                class="gallery-img"
+                src="assets/images/Foto3.jpeg"
+                alt="Kenangan 3"
+                onerror="
+                  this.onerror = null;
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
+              />
+              <div class="gallery-placeholder">
+                <svg viewBox="0 0 24 24" class="photo-icon">
+                  <path
+                    d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+                  />
+                </svg>
+                <span>foto-3.jpg</span>
+              </div>
+            </div>
+            <div class="gallery-item">
+              <img
+                class="gallery-img"
+                src="assets/images/Foto6.jpeg"
+                alt="Kenangan 4"
+                onerror="
+                  this.onerror = null;
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
+              />
+              <div class="gallery-placeholder">
+                <svg viewBox="0 0 24 24" class="photo-icon">
+                  <path
+                    d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+                  />
+                </svg>
+                <span>foto-4.jpg</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- decorative floating hearts around card, purely visual -->
+        <div class="floaty floaty-1">❤</div>
+        <div class="floaty floaty-2">✦</div>
+        <div class="floaty floaty-3">❤</div>
+        <div class="floaty floaty-4">✧</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+       SECTION 3 — ENDING
+  ============================================================= -->
+    <section id="section-3" class="section">
+      <div class="night-sky">
+        <div class="moon"></div>
+        <div class="clouds">
+          <div class="cloud c1"></div>
+          <div class="cloud c2"></div>
+        </div>
+      </div>
+
+      <div class="section-inner">
+        <h2 class="ending-title reveal-up">
+          Thank You For Being In My Life <span class="heart-accent">❤</span>
+        </h2>
+
+        <div id="final-heart-stage">
+          <div id="final-heart" class="final-heart">
+            <svg viewBox="0 0 100 90" class="final-heart-svg">
+              <path
+                d="M50 85 C 10 55, 0 25, 25 10 C 40 2, 50 15, 50 25 C 50 15, 60 2, 75 10 C 100 25, 90 55, 50 85 Z"
+              />
+            </svg>
+          </div>
+          <p id="final-hint" class="gift-hint">click the heart</p>
+        </div>
+
+        <div id="final-message" class="final-message hidden">
+          <p class="i-love-you">
+            I Love You Forever <span class="heart-accent">❤</span>
+          </p>
+        </div>
+
+        <div class="made-with-love reveal-up">
+          <p>Made With Love</p>
+          <span>2026</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- fireworks / confetti / hearts overlays are canvas-driven, see script.js -->
+    <canvas id="fx-canvas"></canvas>
+
+    <script src="script.js"></script>
+  </body>
+</html>
